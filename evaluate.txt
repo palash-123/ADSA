@@ -1,0 +1,52 @@
+void evaluate(string s, vector< vector<string> >& spreadsheet, int row, int col, vector< vector<float> >& spreadsheet_new)
+{
+	stack<float> expr;		// initializes the stack
+	vector<string> split;		// takes the string as input that has to be evalated
+	stringSplitter(s, split);	// extracts each character of the string
+    int row_temp = 0;
+    int col_temp = 0;
+    float temp1 = 0;
+    float temp2 = 0;
+    float result = 0;
+	for(int i = 0; i < split.size(); i++)		//runs till the end of the string is reached [Timing(runs for) : n times]
+	{
+		if(split[i].empty())		//if particular space is empty
+			continue;
+		if(split[i].find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ") != string::npos)	//searches for a letter in the string in order to convert it into a number 
+		{
+			row_temp = convertToRow(split[i].at(0)) - 1;	//assigns float value to the particular character
+			col_temp = stringToInt(split[i].substr(1)) - 1;	//assigns float value to the particular character
+			temp1 = spreadsheet_new[row_temp][col_temp];	//sets the value of the temp1 variable which is detected
+			expr.push( temp1 );			//pushes the value into the stack
+		} 
+		else if (split[i].find_first_of("*/+-") != string::npos )	//if an operator is detected
+		{
+
+			temp1 = expr.top();	//assigns the value of the topmost variable as temp1
+			expr.pop();	//pops temp1
+			temp2 = expr.top();	//assigns the value of the topmost variable as temp2
+			expr.pop();	//pops temp2
+			if (split[i] == "*")		// carries out the respective operation
+			{	result = temp2 * temp1;
+			}
+			else if (split[i] == "+")
+				result = temp2 + temp1;
+			else if (split[i] == "/")
+				result = temp2 / temp1;
+			else if (split[i] == "-")
+				result = temp2 - temp1;
+			expr.push(result);	//pushes the result into the stack
+		} else
+		{
+			temp1 = stringToFloat(split[i]);	
+			expr.push(temp1);
+		}
+	}
+
+	temp1 = expr.top();		// assigns the final value to temp1
+	expr.pop();		//empties the stack
+	spreadsheet_new[row][col] = temp1;	// assigns the value to the respective cell
+
+}
+
+//The above algorithm takes O(n) time to carry out the task of evaluating all the cells.
